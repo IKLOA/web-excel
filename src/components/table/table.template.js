@@ -7,10 +7,18 @@ function toChar(_, index) {
   return String.fromCharCode(CODES.A + index)
 }
 
-function toCell(_, colIndex) {
-  return `
-    <div class="excel-table-row_data__cell" data-col="${colIndex}" contenteditable=""></div>
-  `
+function toCell(row) {
+  return function(_, col) {
+    return `
+      <div 
+        class="excel-table-row_data__cell" 
+        contenteditable 
+        data-col="${col}"
+        data-type="cell"
+        data-id="${row}:${col}"
+      ></div>
+    `
+  }
 }
 
 function toColumn(column, index) {
@@ -43,9 +51,9 @@ export function createTable(rowsCount = 20) {
   const columns = new Array(columnsCount).fill('').map(toChar).map(toColumn).join('')
   rows.push(createRow(columns))
 
-  for (let i = 0; i < rowsCount; i++) {
-    const cells = new Array(columnsCount).fill('').map(toCell).join('')
-    rows.push(createRow(cells, i + 1))
+  for (let row = 0; row < rowsCount; row++) {
+    const cells = new Array(columnsCount).fill('').map(toCell(row)).join('')
+    rows.push(createRow(cells, row + 1))
   }
   return rows.join('')
 }
